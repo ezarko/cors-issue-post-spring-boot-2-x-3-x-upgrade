@@ -24,6 +24,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,7 +66,7 @@ class ExampleWebSecurityAutoConfigurationTests {
   @Test
   void testErrorHandlingForbidden() {
     final HttpHeaders basic = new HttpHeaders();
-    basic.setBasicAuth("fast", "nbulbous");
+    basic.setBasicAuth("user", "password");
     final ResponseEntity<String> forbiddenError = restTemplate.exchange(
         "/forbidden",
         HttpMethod.GET,
@@ -140,15 +143,25 @@ class ExampleWebSecurityAutoConfigurationTests {
     @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       http
-          .securityMatchers(matchers -> matchers.requestMatchers("/unauthenticated"))
+          .securityMatchers(matchers -> matchers.requestMatchers("/unauthenticated", "/authenticated", "/forbidden"))
           .csrf(AbstractHttpConfigurer::disable)
           .cors(Customizer.withDefaults())
           .authorizeHttpRequests(requests -> requests
-            .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
             .requestMatchers("/unauthenticated").permitAll()
+            .requestMatchers("/authenticated", "/forbidden").authenticated()
           )
           .httpBasic(Customizer.withDefaults());
       return http.build();
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        UserDetails user = User.withDefaultPasswordEncoder()
+            .username("user")
+            .password("password")
+            .roles("USER")
+            .build();
+        return new InMemoryUserDetailsManager(user);
     }
   }
 }
