@@ -16,7 +16,7 @@
         <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
         <org.aspectj.version>1.9.7</org.aspectj.version>
         <org.assertj.version>3.22.0</org.assertj.version>
-        <com.github.tomakehurst.version>2.30.1</com.github.tomakehurst.version>
+        <org.wiremock.version>3.3.1</org.wiremock.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -72,9 +72,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8</artifactId>
-            <version>${com.github.tomakehurst.version}</version>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>${org.wiremock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
