@@ -1,5 +1,7 @@
 package com.example.web.autoconfigure.security.autoconfigure;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.example.web.security.autoconfigure.ExampleWebSecurityAutoConfiguration;
 import jakarta.servlet.DispatcherType;
 import org.junit.jupiter.api.Tag;
@@ -46,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @DirtiesContext
 class ExampleWebSecurityAutoConfigurationTests {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExampleWebSecurityAutoConfigurationTests.class);
 
   @Autowired
   private TestRestTemplate restTemplate;
@@ -142,6 +145,7 @@ class ExampleWebSecurityAutoConfigurationTests {
     @Bean
     @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+      LOGGER.debug("called configure(http)");
       http
           .securityMatchers(matchers -> matchers.requestMatchers("/unauthenticated", "/authenticated", "/forbidden"))
           .csrf(AbstractHttpConfigurer::disable)
@@ -156,6 +160,7 @@ class ExampleWebSecurityAutoConfigurationTests {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
+      LOGGER.debug("created InMemoryUserDetailsManager");
         UserDetails user = User.withDefaultPasswordEncoder()
             .username("user")
             .password("password")

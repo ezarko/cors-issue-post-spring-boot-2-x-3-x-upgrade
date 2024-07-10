@@ -1,5 +1,7 @@
 package com.example.web.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -20,7 +22,8 @@ public interface ExampleWebSecurityConfigurer {
    * @throws Exception
    */
   default void configure(AuthenticationManagerBuilder auth) throws Exception {
-
+    Logger LOGGER = LoggerFactory.getLogger(ExampleWebSecurityConfigurer.class);
+    LOGGER.error("triggered default configure(auth) method");
   }
 
   /**
@@ -30,7 +33,8 @@ public interface ExampleWebSecurityConfigurer {
    * @throws Exception
    */
   default void configure(WebSecurity web) throws Exception {
-
+    Logger LOGGER = LoggerFactory.getLogger(ExampleWebSecurityConfigurer.class);
+    LOGGER.error("triggered default configure(web) method");
   }
 
   /**
@@ -40,7 +44,8 @@ public interface ExampleWebSecurityConfigurer {
    * @throws Exception
    */
   default void configure(HttpSecurity http) throws Exception {
-
+    Logger LOGGER = LoggerFactory.getLogger(ExampleWebSecurityConfigurer.class);
+    LOGGER.error("triggered default configure(http) method");
   }
 
 }

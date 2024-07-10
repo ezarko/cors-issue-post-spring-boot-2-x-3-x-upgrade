@@ -1,5 +1,7 @@
 package com.example.web.autoconfigure.security.autoconfigure;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.example.web.config.ExampleWebSecurityConfigurer;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -40,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @DirtiesContext
 class ExampleWebSecurityAutoConfigurationTests {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExampleWebSecurityAutoConfigurationTests.class);
 
   @Autowired
   private TestRestTemplate restTemplate;
@@ -135,6 +138,7 @@ class ExampleWebSecurityAutoConfigurationTests {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
+      LOGGER.debug("called configure(http)");
       http
           .authorizeRequests()
             .antMatchers("/unauthenticated").permitAll()
@@ -148,6 +152,7 @@ class ExampleWebSecurityAutoConfigurationTests {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
+      LOGGER.debug("called configure(auth)");
       auth.inMemoryAuthentication()
           .withUser("fast")
           .password(passwordEncoder().encode("nbulbous"))
@@ -156,6 +161,7 @@ class ExampleWebSecurityAutoConfigurationTests {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+      LOGGER.debug("created PasswordEncoder");
       return new BCryptPasswordEncoder();
     }
 

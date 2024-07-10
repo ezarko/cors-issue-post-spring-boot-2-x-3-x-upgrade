@@ -1,5 +1,7 @@
 package com.example.web.security.autoconfigure;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.example.web.config.ExampleWebSecurityConfigurer;
 import com.example.web.config.RegexCorsConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,16 +38,19 @@ import java.util.Collection;
 @EnableAspectJAutoProxy
 @EnableWebSecurity
 public class ExampleWebSecurityAutoConfiguration extends WebSecurityConfigurerAdapter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExampleWebSecurityAutoConfiguration.class);
 
   private final Collection<ExampleWebSecurityConfigurer> configurers;
 
   public ExampleWebSecurityAutoConfiguration(
       final Collection<ExampleWebSecurityConfigurer> configurers) {
+    LOGGER.debug("ExampleWebSecurityAutoConfiguration constructor");
     this.configurers = configurers;
   }
 
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    LOGGER.debug("called configure(auth)");
     for (final ExampleWebSecurityConfigurer configurer : configurers) {
       configurer.configure(auth);
     }
@@ -53,6 +58,7 @@ public class ExampleWebSecurityAutoConfiguration extends WebSecurityConfigurerAd
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    LOGGER.debug("called configure(http)");
     for (final ExampleWebSecurityConfigurer configurer : configurers) {
       configurer.configure(http);
     }
@@ -72,6 +78,7 @@ public class ExampleWebSecurityAutoConfiguration extends WebSecurityConfigurerAd
   @Bean
   @ConditionalOnMissingBean(ignored = HandlerMappingIntrospector.class)
   public CorsConfigurationSource corsConfigurationSource() {
+    LOGGER.debug("creating CorsConfigurationSource");
     final RegexCorsConfiguration config = new RegexCorsConfiguration();
     config.setAllowCredentials(true);
     config.addAllowedOrigin(".*?://(.+\\.)*example\\.com");
@@ -84,6 +91,7 @@ public class ExampleWebSecurityAutoConfiguration extends WebSecurityConfigurerAd
 
   @Override
   public void configure(WebSecurity web) throws Exception {
+    LOGGER.debug("called configure(web)");
     for (final ExampleWebSecurityConfigurer configurer : configurers) {
       configurer.configure(web);
     }
@@ -92,6 +100,7 @@ public class ExampleWebSecurityAutoConfiguration extends WebSecurityConfigurerAd
   @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
   @Override
   public AuthenticationManager authenticationManagerBean() throws Exception {
+    LOGGER.debug("creating AuthenticationManager");
     return super.authenticationManagerBean();
   }
 }

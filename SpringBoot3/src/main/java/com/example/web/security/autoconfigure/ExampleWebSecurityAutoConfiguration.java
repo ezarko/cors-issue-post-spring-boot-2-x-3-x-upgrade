@@ -1,5 +1,7 @@
 package com.example.web.security.autoconfigure;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.example.web.config.ExampleWebSecurityConfigurer;
 import com.example.web.config.RegexCorsConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,8 +20,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -35,10 +39,23 @@ import java.util.Collection;
 @EnableAspectJAutoProxy
 @EnableWebSecurity
 public class ExampleWebSecurityAutoConfiguration {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExampleWebSecurityAutoConfiguration.class);
+
+  private final Collection<ExampleWebSecurityConfigurer> configurers;
+
+  public ExampleWebSecurityAutoConfiguration(
+      final Collection<ExampleWebSecurityConfigurer> configurers) {
+    LOGGER.debug("ExampleWebSecurityAutoConfiguration constructor");
+    this.configurers = configurers;
+  }
 
   @Bean(name="ExampleWebSecurityAutoConfiguration")
   @Order(50) // allow other implementations to take precedence
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    LOGGER.debug("called configure(http)");
+    for (final ExampleWebSecurityConfigurer configurer : configurers) {
+      configurer.configure(http);
+    }
     http
         .authorizeHttpRequests(request -> request
           .anyRequest().authenticated()
@@ -53,6 +70,7 @@ public class ExampleWebSecurityAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean(ignored = HandlerMappingIntrospector.class)
   public CorsConfigurationSource corsConfigurationSource() {
+    LOGGER.debug("creating CorsConfigurationSource");
     final RegexCorsConfiguration config = new RegexCorsConfiguration();
     config.setAllowCredentials(true);
     config.addAllowedOrigin(".*?://(.+\\.)*example\\.com");
